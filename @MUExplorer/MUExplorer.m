@@ -5,7 +5,10 @@ classdef MUExplorer < handle
         MainLayout           % tiledlayout object
         MetaPanel            % uipanel
         MetaTextHandles      % struct of text uicontrols
+        MetaWidgets          % struct of pushbutton etc uicontrols
         Data
+        Raw
+        BackgroundNoise
         SampleRate
         Time
         Sync
@@ -51,6 +54,7 @@ classdef MUExplorer < handle
         DataRoot
         InputSubfolder
         InputSuffix
+        DemuseInputSubfolder
         OutputSubfolder
         LayoutFile
         Version
@@ -80,6 +84,7 @@ classdef MUExplorer < handle
             %   app = MUExplorer(Data, SampleRate);
             %   app = MUExplorer(Data, SampleRate, Sync);
             %   app = MUExplorer(sessionName, experimentNum);
+            %   app = MUExplorer(sessionName, experimentNum, loadDEMUSE);
 
             if nargin < 3
                 Sync = zeros(1,size(Data,2));
@@ -93,42 +98,37 @@ classdef MUExplorer < handle
             obj.InputSubfolder = cfg.InputSubfolder;
             obj.InputSuffix = cfg.InputSuffix;
             obj.OutputSubfolder = cfg.OutputSubfolder;
+            obj.DemuseInputSubfolder = cfg.DemuseInputSubfolder;
             obj.LayoutFile = cfg.LayoutFile;
-            obj.Spacing = cfg.YLineSpacingMicroVolts;
+            obj.Spacing = cfg.YLineSpacingSD;
             obj.PeakWidth = cfg.ExtensionPeakWidthSeconds;
             obj.EnvelopePathSmoothingLowCut = cfg.EnvelopePathSmoothingLowCutHz;
             obj.Grids = cfg.Grids;
 
             if isnumeric(Data)
-                obj.Data = Data;
                 obj.SampleRate = SampleRate;
-                obj.Time = (0:size(Data,2)-1) / SampleRate;
                 obj.SelectedPeaks = cell(1, 1);
-                obj.Sync = Sync;
-                % Add lowpass envelope estimate for path
-                [ref_signal, coordinatesPlateau] = obj.parseTargetPlateaus(Sync);
-                [b, a] = butter(1, obj.EnvelopePathSmoothingLowCut / (obj.SampleRate/2), 'low');
-                env = zeros(size(Data));
-                for iCh = 1:size(Data,1)
-                    env(iCh,:) = filtfilt(b, a, abs(Data(iCh,:)));
-                end
-                env = mean(env,1);
-                mu_rest = mean(env(~ref_signal & ((1:numel(env)) > 6000) & ((1:numel(env)) < (numel(env)-6000))));
-                env = env - mu_rest;
-                env([1:6000, (end-6000):end]) = 0;
-                env_sort = sort(env(logical(ref_signal)),'ascend');
-                env = env ./ env_sort(round(0.95*numel(env_sort)));
-                obj.CoordinatesPlateau = coordinatesPlateau;
-                obj.PathTrace = env;
+                obj.processSignal(Data, Sync);
                 obj.Ready = true;
+                loadDEMUSE = false;
             else
                 sessionName = Data;
                 experimentNumber = SampleRate;
+                if (nargin > 2) && islogical(Sync)
+                    loadDEMUSE = Sync;
+                else
+                    loadDEMUSE = false;
+                end
                 loadSignal(obj, sessionName, experimentNumber);
+                
             end
             obj.initGUI();
             obj.updatePointer();  % Force pointer mode sync
-            obj.loadResults();
+            if loadDEMUSE
+                loadResultsDEMUSE(obj);
+            else
+                obj.loadResults();
+            end
             drawnow();
         end
 
@@ -166,6 +166,8 @@ classdef MUExplorer < handle
         loadResults(obj);
         loadSignal(obj, SessionName, ExperimentNum);
 
+        processSignal(obj, uni, sync);
+
         saveResultsDEMUSE(obj);
         loadResultsDEMUSE(obj);
         loadSignalDEMUSE(obj, SessionName, ExperimentNum);
@@ -181,6 +183,9 @@ classdef MUExplorer < handle
         PNR = estimatePNR(MUPulses,IPT,fsamp, options);
         eSIG = extend(SIG, extFact);
         cfg = readSimpleYAML(filepath);
+        [E, D] = pcaesig(signal);
+        [whitensignals, whiteningMatrix, dewhiteningMatrix] = whiteesig(signal, E, D)
+        [ios,keep] = estimate_ios(MUPulses, fs, options)
     end
 
     methods (Static, Access = protected)

@@ -28,6 +28,8 @@ convTrace = score / templateNorm;
 hannWin = hann(hannLen)';
 hannWin = hannWin / sum(hannWin);  % normalize to preserve amplitude
 convTrace = abs(convTrace);
+convTrace(1:min(100,numel(convTrace))) = 0;
+convTrace(max(1,numel(convTrace)-100):end) = 0;
 convTrace = conv(convTrace, hannWin, 'same');
 convTrace = convTrace ./ max(convTrace);
 

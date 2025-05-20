@@ -12,7 +12,21 @@ loadPath = fullfile(obj.DataRoot, obj.SessionName, obj.OutputSubfolder, ...
 
 if ~isfile(loadPath)
     fprintf('[Load] No DEMUSE result found at:\n  %s\n', loadPath);
-    return;
+    loadPath = fullfile(obj.DataRoot, obj.SessionName, obj.DemuseInputSubfolder, ...
+        sprintf('%s_%d_*.mat', obj.SessionName, obj.ExperimentNum));
+    F = dir(loadPath);
+    if isempty(F)
+        fprintf(1,'\t->\tPlease select file to load.\n');
+        [file,location] = uigetfile('*.mat', "Select DEMUSE output to load", ...
+            fullfile(obj.DataRoot, obj.SessionName));
+        if file == 0
+            fprintf(1,'No selection. No DEMUSE results loaded.\n');
+            return;
+        end
+        loadPath = fullfile(location, file);
+    else
+        loadPath = fullfile(F(1).folder,F(1).name);
+    end
 end
 
 fprintf('[Load] Reading DEMUSE-compatible result:\n  %s\n', loadPath);
@@ -44,14 +58,14 @@ if isfield(S, 'description')
 end
 
 % Update GUI
-obj.updateTemplateMetadata();
-obj.runConvolution();             % Recompute convolution from templates (if any)
 obj.displaySelectedPeaks();      % Optional visual update
-obj.updateTemplateWaveforms();   % Show blank or reconstructed
 for k = 1:numel(obj.Spikes)
     obj.CurrentTemplateIndex = k;
     obj.generateTemplate();
 end
 obj.CurrentTemplateIndex = numel(obj.Spikes);
+obj.updateTemplateMetadata();
+obj.runConvolution();             % Recompute convolution from templates (if any)
+obj.updateTemplateInsetWaveforms();   % Show blank or reconstructed
 fprintf('[Load] Restored %d spike trains from DEMUSE.\n', obj.CurrentTemplateIndex);
 end

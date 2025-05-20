@@ -28,6 +28,8 @@
     |
     ├── <Your Other Session Folders...>
   ```
+  + `DemuseInputSubfolder` - If loading using `DEMUSE` results, where to look for those (within `SessionName` folder)
+  + `OutputSubfolder` - Where the saved results files are stored.
 
 You can open the app by either giving your data directly, i.e. if you have `N` channels x `M` samples data in time-series `data` with sample rate `fs`, then you can simply specify:
 ```
@@ -45,6 +47,26 @@ app = MUExplorer(sessionName, experimentNum);
 ```
 If you set up your folders and config first, this way is preferred because ultimately it can make dealing with the data easier. For one-off ad hoc usage it will probably be easier to use by specifying the data, sample rate, and ref/sync signal explicitly.  
 
+To automatically populate the file selection dialog for loading DEMUSE results with experiment/session data:
+```
+app = MUExplorer(sessionName, experimentNum, true);
+```
+
+## Usage
+If you are starting a file from scratch, you can loosely follow these step:
+1. Hold control and left-click on a region that looks like it has spikes (use ref signal in background on top, plus you should know what spikes look like)
+2. Left-click near peaks of prominent spikes. Do this for several instances where the waveform shape looks the same.
+3. Press enter.
+4. Return to full timescale mode by scrolling backwards on mouse wheel.
+5. Hopefully now you see some reasonably "peaky" looking train on the bottom axis where the impulses correlate with what you'd expect based on ref signal.
+6. Right-click to set the upper bound on the bottom axis (red line) to exclude very high points.
+7. Left-click to set the lower bound on the bottom axis (blue line) if you need to adjust it now the template has been generated.
+8. Regenerate the template for this grouping by pressing enter.
+ + Hopefully by now you have a template waveform with reasonable looking spatial localization (bottom-left inset).
+ + You can iteratively continue this procedure, or you can press `n` to create a new template grouping and continue.
+9. When you're done, press `CTRL + S` to save (for MUExplorer), or if you want to look at the output in DEMUSE tool, press `ALT + S` to export a matfile that you can load into DEMUSE using the `Load Results` button directly. 
+
+
 ---
 
 ## ⌨️ Keyboard Shortcuts
@@ -52,13 +74,16 @@ If you set up your folders and config first, this way is preferred because ultim
 | Key / Combo       | Action                                                  |
 |-------------------|----------------------------------------------------------|
 | `H`               | Show this help message                                   |
-| `Enter/Space`     | Generate template from selected peaks and run matched filter convolution |
+| `Enter`     | Generate template from selected peaks and run matched filter convolution |
+| `Space`     | Run matched filter convolution (only)                          |
 | `Escape`          | Reset selected peaks                                     |
 | `Ctrl + S`        | Save results to MUExplorer-style `.mat` file             |
 | `Alt + S`         | Save results to DEMUSE-compatible `.mat` file            |
 | `Ctrl + L`        | Load results from MUExplorer-style `.mat` file           |
 | `Alt + L`         | Load results from DEMUSE-compatible `.mat` file          |
 | `N`               | Start a new template group                               |
+| `W`               | Subtract current template (WIP)                          |
+| `C`               | Confirm spikes for current template                      |
 | `Tab`             | Switch to next template group                            |
 | `↑ / ↓`           | Navigate through template groups                         |
 | `← / →`           | Pan view left/right by 75%% of current view              |

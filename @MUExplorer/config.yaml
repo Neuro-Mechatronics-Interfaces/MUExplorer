@@ -1,10 +1,11 @@
-Version: 1
+Version: 1.1
 DataRoot: C:/Data/MetaWB
 InputSubfolder: MotorUnits Decomposition/Decomposition Input
 OutputSubfolder: MUExplorer
+DemuseInputSubfolder: MotorUnits Decomposition/Decomposition Output/Auto
 InputSuffix: _synchronized.mat
 LayoutFile: tmsi_layout.mat
-YLineSpacingMicroVolts: 75
+YLineSpacingSD: 3.5
 ExtensionPeakWidthSeconds: 0.010
 EnvelopePathSmoothingLowCutHz: 0.5
 Grids:

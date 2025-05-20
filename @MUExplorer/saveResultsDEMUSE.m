@@ -37,12 +37,12 @@ fprintf('[Save] Exporting DEMUSE-compatible .mat file:\n  %s\n', savePath);
 % MUPulses: cell of spike index vectors
 MUPulses = obj.Spikes;
 
-extensionFactor = round(obj.PeakWidth * obj.SampleRate)+1;
-
 fprintf(1,'Extending data and computing covariance...\n');
-eSIG = MUExplorer.extend(obj.Data, extensionFactor);
+extensionFactor = round(obj.PeakWidth * obj.SampleRate)+1;
+eSIG = MUExplorer.extend(obj.Raw, extensionFactor);
 Ry = eSIG * eSIG';
-iRy = pinv(Ry);
+W = chol(Ry + diag(obj.BackgroundNoise));
+wSIG = W\eSIG;
 fprintf(1,'\bcomplete.\n');
 
 nMU = numel(obj.Spikes);
@@ -56,7 +56,7 @@ for m = 1:nMU
 
     % Compute projection
     w = sum(eSIG(:, spikes), 2);  % unnormalized MU filter
-    IPTm = (w' * iRy * eSIG);
+    IPTm = (w' * wSIG);
 
     % Clean edges
     IPTm(1:extensionFactor*2) = 0;

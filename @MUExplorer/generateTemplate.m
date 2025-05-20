@@ -2,11 +2,22 @@ function generateTemplate(obj)
 %GENERATETEMPLATE  Generates template using current member waveforms.
 
 k = obj.CurrentTemplateIndex;
-
-peaks = obj.SelectedPeaks{k};
+if k > numel(obj.Spikes)
+    obj.Spikes{k} = {};
+end
+peaks = obj.Spikes{k};
 if isempty(peaks)
-    warning('No peaks selected for Template %d.', k);
-    return;
+    peaks = obj.SelectedPeaks{k};
+    if isempty(peaks)
+        warning('No peaks selected for Template %d.', k);
+        return;
+    end
+else
+    if ~isempty(obj.SelectedPeaks{k})
+        peaks = union(reshape(peaks,1,[]), obj.SelectedPeaks{k}(:,2)');
+    end
+    peaks = [ones(numel(peaks),1), reshape(peaks,[],1)];
+    obj.SelectedPeaks{k} = peaks;
 end
 
 nCh = size(obj.Data, 1);
@@ -26,5 +37,7 @@ for p = 1:nPeaks
 end
 
 obj.Templates{k} = mean(snippets, 3);
+obj.Template = obj.Templates{k};
+obj.updateTemplateInsetWaveforms();
 fprintf('Generated Template %d [%d channels x %d samples]\n', k, nCh, winLen);
 end

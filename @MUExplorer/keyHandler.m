@@ -6,9 +6,14 @@ if strcmp(event.Key, 'control')
     return;
 end
 switch lower(event.Key)
-    case {'space','return'}  % ENTER
+    case {'return'}  % ENTER
         fprintf('Generating Template from %d peaks...\n', size(obj.SelectedPeaks,1));
         obj.generateTemplate();
+        fprintf('Running convolution...\n');
+        obj.runConvolution();
+        obj.updateTemplateMetadata();
+
+    case {'space'}
         fprintf('Running convolution...\n');
         obj.runConvolution();
         obj.updateTemplateMetadata();
@@ -41,6 +46,9 @@ switch lower(event.Key)
         xRange = diff(xlim(obj.MainAxes));
         xShift = 0.75 * xRange;
         xlim(obj.MainAxes, xlim(obj.MainAxes) + xShift);
+    case 'w'
+        fprintf(1,'Subtracting template-%02d from data...\n', obj.CurrentTemplateIndex);
+        obj.subtractTemplate();
 
     case 'h'
         obj.printHelp();
@@ -68,10 +76,12 @@ switch lower(event.Key)
             obj.loadResultsDEMUSE();
             return;
         end
+    case 'c'
+        obj.confirmSpikes();
 
     case 'escape'       % R
         fprintf('Resetting selected peaks...\n');
-        obj.SelectedPeaks = [];
+        obj.SelectedPeaks = cell(size(obj.Templates));
         for iCh = 1:size(obj.Data,1)
             set(obj.MarkerHandles(iCh),'XData',[],'YData',[]);
         end

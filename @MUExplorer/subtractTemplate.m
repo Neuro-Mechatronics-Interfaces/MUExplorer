@@ -31,10 +31,13 @@ for s = 1:numel(Spikes)
 end
 
 % Optionally store residual
-obj.Residuals{k} = obj.Data;
+obj.Residuals{k} = dataCopy;
 
 fprintf('Subtracted Template group %d from %d spike locations.\n', k, numel(Spikes));
 
 % Optionally refresh display
-obj.initGUI();
+for ch = 1:nCh
+    y = zscore(obj.Data(ch,:)) + offsetVec(ch);
+    set(obj.PlotHandles(ch),'YData',y);
+end
 end
