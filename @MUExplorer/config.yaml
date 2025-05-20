@@ -1,0 +1,39 @@
+Version: 1
+DataRoot: C:/Data/MetaWB
+InputSubfolder: MotorUnits Decomposition/Decomposition Input
+OutputSubfolder: MUExplorer
+InputSuffix: _synchronized.mat
+LayoutFile: tmsi_layout.mat
+YLineSpacingMicroVolts: 75
+ExtensionPeakWidthSeconds: 0.010
+EnvelopePathSmoothingLowCutHz: 0.5
+Grids:
+ - Name: "P-EXT"
+   NumGridColumns: 4
+   NumGridRows: 8
+   GridTraceWidth: 0.05
+   GridTraceHeight: 0.03
+   GridOffsetX: 0
+   GridOffsetY: 0.1
+ - Name: "P-FLX"
+   NumGridColumns: 4
+   NumGridRows: 8
+   GridTraceWidth: 0.05
+   GridTraceHeight: 0.03
+   GridOffsetX: 0
+   GridOffsetY: 0.6
+ - Name: "D-EXT"
+   NumGridColumns: 4
+   NumGridRows: 8
+   GridTraceWidth: 0.05
+   GridTraceHeight: 0.03
+   GridOffsetX: 0.6
+   GridOffsetY: 0.1
+ - Name: "D-FLX"
+   NumGridColumns: 4
+   NumGridRows: 8
+   GridTraceWidth: 0.05
+   GridTraceHeight: 0.03
+   GridOffsetX: 0.6
+   GridOffsetY: 0.6
+  
