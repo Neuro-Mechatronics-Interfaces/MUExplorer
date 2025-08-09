@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>MUExplorer Parameters</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="./favicon-light.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="./favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+  <h1>MUExplorer Parameter Panel</h1>
+
+  <form id="paramForm">
+    <fieldset>
+      <legend>Scaling & Centering</legend>
+      <label class="row">Robust Scale (Median & MAD)
+        <input type="checkbox" name="UseRobustScale" checked>
+      </label>
+      <label>Signal Mean Epoch
+        <select name="CenterFrom">
+          <option value="rest" selected>rest</option>
+          <option value="all">all</option>
+        </select>
+      </label>
+      <label>Noise Scale Epoch
+        <select name="ScaleFrom">
+          <option value="rest" selected>rest</option>
+          <option value="all">all</option>
+        </select>
+      </label>
+      <label>Y Line Spacing (SDs)
+        <input name="YLineSpacingSD" type="number" step="0.1" min="0" value="3.5">
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Regularization</legend>
+      <label>Regularization Mode
+        <select name="RegularizationMode" id="regMode">
+          <option value="relative" selected>Relative</option><!--  (TikhonovEpsilon × median λ) -->
+          <option value="absolute">Absolute</option><!-- (AbsoluteEpsilon) -->
+          <option value="perChannelNoise">Per-Channel</option><!-- (NoiseVar diag) -->
+        </select>
+      </label>
+      <label class="row">Tikhonov ε
+        <input type="number" step="0.1" min="0" name="TikhonovEpsilon" value="1.5">
+      </label>
+      <label class="row">ε
+        <input type="number" step="1e-6" min="0" name="AbsoluteEpsilon" value="0.001">
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Smoothing</legend>
+      <label class="row">Apply LPF Smoother
+        <input type="checkbox" name="ApplyPostLowpass" checked>
+      </label>
+      <label class="row">Cutoff Frequency (Hz)
+        <input type="number" step="1" min="1" name="LowpassCutoff" value="200">
+      </label>
+    </fieldset>
+
+    <button type="submit">Apply</button>
+    <button type="button" id="reprocessBtn">Reprocess</button>
+    <div id="status"></div>
+  </form>
+
+  <!-- ES module entrypoint -->
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

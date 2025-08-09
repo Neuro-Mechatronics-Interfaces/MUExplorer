@@ -1,2 +1,4 @@
 *.asv
 *.mat
+MUConnector/node_modules/
+MUConnector/package-lock.json

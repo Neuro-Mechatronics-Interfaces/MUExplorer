@@ -14,24 +14,30 @@ hannLen = 2 * winRadius + 1;
 
 % Compute convolution score
 score = zeros(1, nSamp);
-
+template = template - mean(template,2);
+dtemplate = reshape(del2(reshape(template,8,nCh/32,[])),nCh,[]);
+ddata = reshape(del2(reshape(obj.Data,8,nCh/32,[])),nCh,[]);
 for ch = 1:nCh
-    temp = template(ch,:) - mean(template(ch,:));
-    convOut = conv(obj.Data(ch,:), fliplr(temp), 'same');
-    score = score + convOut;
+    temp = dtemplate(ch,:);
+    convOut = conv(ddata(ch,:), fliplr(temp), 'same');
+    score = score + convOut / norm(temp(:));
 end
 
 % Normalize
 templateNorm = norm(template(:));
 convTrace = score / templateNorm;
 
-hannWin = hann(hannLen)';
-hannWin = hannWin / sum(hannWin);  % normalize to preserve amplitude
-convTrace = abs(convTrace);
+% hannWin = hann(hannLen)';
+% hannWin = hannWin / sum(hannWin);  % normalize to preserve amplitude
+% convTrace = abs(convTrace);
 convTrace(1:min(100,numel(convTrace))) = 0;
 convTrace(max(1,numel(convTrace)-100):end) = 0;
-convTrace = conv(convTrace, hannWin, 'same');
-convTrace = convTrace ./ max(convTrace);
+% convTrace = conv(convTrace, hannWin, 'same');
+
+convMask = obj.Time >= obj.ConvAxes.XLim(1) & obj.Time <= obj.ConvAxes.XLim(2);
+convTrace = convTrace ./ max(convTrace(convMask));
+disp(max(convTrace));
+disp(iqr(convTrace));
 
 obj.ConvolutionTrace = convTrace;
 

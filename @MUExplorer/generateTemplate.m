@@ -1,5 +1,9 @@
-function generateTemplate(obj)
+function generateTemplate(obj, reset)
 %GENERATETEMPLATE  Generates template using current member waveforms.
+
+if nargin < 2
+    reset = false;
+end
 
 k = obj.CurrentTemplateIndex;
 if k > numel(obj.Spikes)
@@ -13,7 +17,7 @@ if isempty(peaks)
         return;
     end
 else
-    if ~isempty(obj.SelectedPeaks{k})
+    if ~isempty(obj.SelectedPeaks{k}) && ~reset
         peaks = union(reshape(peaks,1,[]), obj.SelectedPeaks{k}(:,2)');
     end
     peaks = [ones(numel(peaks),1), reshape(peaks,[],1)];

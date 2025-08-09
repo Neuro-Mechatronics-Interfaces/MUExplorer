@@ -1,15 +1,17 @@
-function loadSignal(obj, SessionName, ExperimentNum)
+function loadSignal(obj, SessionName, ExperimentNum, options)
 %LOADSIGNAL Load EMG and Sync Data from a TMSi session
 
 arguments
     obj
     SessionName (1,1) string
     ExperimentNum (1,1) double {mustBeInteger}
+    options.Prefix {mustBeTextScalar} = "";
+    options.Suffix {mustBeTextScalar} = "";
 end
 
 baseDir = fullfile(obj.DataRoot, SessionName);
 inputDir = fullfile(baseDir, obj.InputSubfolder);
-expBase = sprintf('%s_%d', SessionName, ExperimentNum);
+expBase = sprintf('%s%s_%d%s', options.Prefix, SessionName, ExperimentNum, options.Suffix);
 dataPath = fullfile(inputDir, sprintf("%s%s", expBase, obj.InputSuffix)); 
 if ~isfile(dataPath)
     error('File not found: %s', dataPath);

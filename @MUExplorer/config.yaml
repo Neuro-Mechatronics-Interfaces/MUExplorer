@@ -1,13 +1,31 @@
-Version: 1.1
+Version: 2.2
 DataRoot: C:/Data/MetaWB
-InputSubfolder: MotorUnits Decomposition/Decomposition Input
+InputSubfolder: MotorUnits Decomposition/Decomposition Inputs
 OutputSubfolder: MUExplorer
 DemuseInputSubfolder: MotorUnits Decomposition/Decomposition Output/Auto
 InputSuffix: _synchronized.mat
 LayoutFile: tmsi_layout.mat
-YLineSpacingSD: 3.5
-ExtensionPeakWidthSeconds: 0.010
 EnvelopePathSmoothingLowCutHz: 0.5
+ReprocessParametersOnUpdate: true
+MUExplorerPort: 55557
+MUExplorerIP: "127.0.0.1"
+MUConnectorPort: 55556
+MUConnectorIP: "127.0.0.1"
+MUConnectorUDP: 55555
+Click:
+  SnapVertTolFactor: 0.3
+  SnapHorizTolFactor: 0.3
+  PeakSearchRadius: 4 # +/- this many samples
+InitialProcessingParameters: 
+  YLineSpacingSD: 3.5
+  UseRobustScale: true
+  CenterFrom: "rest" # ('rest'|'all')
+  ScaleFrom: "rest" # ('rest'|'all')
+  RegularizationMode: "relative" # ('relative'|'absolute'|'perChannelNoise')
+  AbsoluteEpsilon: 1.5 # Used when RegularizationMode is 'absolute'
+  TikhonovEpsilon: 3.0 # Larger values = more smoothing of non-spiky parts
+  ApplyPostLowpass: true # Smooths signal after whitening
+  LowpassCutoff: 250.0 # Hz
 Grids:
  - Name: "P-EXT"
    NumGridColumns: 4
@@ -28,13 +46,13 @@ Grids:
    NumGridRows: 8
    GridTraceWidth: 0.05
    GridTraceHeight: 0.03
-   GridOffsetX: 0.6
+   GridOffsetX: 0.5
    GridOffsetY: 0.1
  - Name: "D-FLX"
    NumGridColumns: 4
    NumGridRows: 8
    GridTraceWidth: 0.05
    GridTraceHeight: 0.03
-   GridOffsetX: 0.6
+   GridOffsetX: 0.5
    GridOffsetY: 0.6
   

@@ -86,7 +86,7 @@ if isempty(obj.Figure) || ~isvalid(obj.Figure)
     obj.MainAxes = nexttile(obj.MainLayout,1,[3 1]);
     set(obj.MainAxes,'NextPlot','add','ColorOrder',obj.ColorOrder);
     obj.ConvAxes = nexttile(obj.MainLayout,4,[1 1]);
-    set(obj.ConvAxes,'NextPlot','add','ColorOrder',[0 0 0; 1 0 0],'YLim',[0 1],'YColor','none');
+    set(obj.ConvAxes,'NextPlot','add','ColorOrder',[0 0 0; 1 0 0],'YLim',[-0.25 1.25],'YColor','none', 'XColor','k','XAxisLocation','origin','XTick',[]);
     obj.ConvolutionTraceHandle = plot(obj.ConvAxes, obj.Time, zeros(size(obj.Time)), 'k', 'LineWidth', 1, 'HitTest', 'off');
     obj.ConvPeakMarkers = plot(obj.ConvAxes, NaN, NaN, 'ro', 'MarkerSize', 5, 'LineWidth', 1.5, 'HitTest', 'off');
     obj.ConvMatchLbLine = yline(obj.ConvAxes,obj.ConvMatchLim(obj.CurrentTemplateIndex,1), ...
@@ -118,12 +118,12 @@ if isempty(obj.Figure) || ~isvalid(obj.Figure)
     % Plot EMG traces
     obj.PlotHandles = gobjects(nCh,1);
     for ch = 1:nCh
-        y = zscore(obj.Data(ch,:)) + offsetVec(ch);
-        obj.PlotHandles(ch) = plot(obj.MainAxes, obj.Time, y,'LineWidth', 0.5);
+        % y = zscore(obj.Data(ch,:)) + offsetVec(ch);
+        obj.PlotHandles(ch) = plot(obj.MainAxes, obj.Time, obj.Data(ch,:) + offsetVec(ch),'LineWidth', 0.5);
     end
     
     % Plot placeholders for selected peak markers
-    obj.MarkerHandles = plot(obj.MainAxes, NaN, NaN(1,nCh), 'ro', 'MarkerSize', 6, 'LineWidth', 1.5);
+    obj.MarkerHandles = plot(obj.MainAxes, NaN, NaN(1,nCh), 'r.', 'MarkerSize', 8, 'LineWidth', 1);
 else
     figure(obj.Figure);
 end
